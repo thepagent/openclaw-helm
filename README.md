@@ -8,6 +8,16 @@ A slim Helm chart for OpenClaw designed without Chromium browser integration. Th
 helm install openclaw oci://ghcr.io/thepagent/openclaw-helm
 ```
 
+### Verify Installation
+
+Run the built-in connectivity test to verify the gateway is responding:
+
+```bash
+helm test openclaw
+```
+
+This validates that the OpenClaw gateway is accessible on localhost within the pod.
+
 ## Design Philosophy
 
 This chart is designed with three core principles:
