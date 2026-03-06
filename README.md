@@ -24,16 +24,6 @@ This chart is designed with three core principles:
 helm uninstall openclaw
 ```
 
-## Configuration
-
-Edit `values.yaml` to customize:
-
-- `image.tag` - OpenClaw version
-- `config.gateway.controlUi.allowedOrigins` - CORS origins
-- `config.browser.enabled` - Enable/disable browser (default: false)
-- `skills` - List of skills to install
-- `resources` - CPU/memory limits
-
 ## Post-Installation Setup
 
 After installing the chart, run the OpenClaw onboarding wizard to configure your AI provider:
