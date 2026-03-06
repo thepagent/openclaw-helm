@@ -2,7 +2,7 @@ name: Bump OpenClaw Version
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+    - cron: '0 * * * *'  # Every hour
   workflow_dispatch:
     inputs:
       version:
