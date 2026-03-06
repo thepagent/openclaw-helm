@@ -33,27 +33,22 @@ Edit `values.yaml` to customize:
 - `skills` - List of skills to install
 - `resources` - CPU/memory limits
 
-## API Keys
+## AI Provider Authentication
 
-OpenClaw requires API keys for AI providers. Provide them via environment variables:
+OpenClaw supports OAuth-based onboarding for AI providers (OpenAI, Anthropic, etc.). Users authenticate through the OpenClaw UI rather than providing API keys directly.
+
+For development/testing, you can optionally provide API keys via environment variables:
 
 ```yaml
 env:
   ANTHROPIC_API_KEY: "sk-ant-..."
-  # or
-  OPENAI_API_KEY: "sk-..."
 ```
 
-**Recommended:** Use Kubernetes secrets instead of hardcoding:
+Or use Kubernetes secrets:
 
 ```bash
 kubectl create secret generic openclaw-secrets \
   --from-literal=ANTHROPIC_API_KEY=sk-ant-...
-
-# Then reference in values.yaml:
-envFrom:
-  - secretRef:
-      name: openclaw-secrets
 ```
 
 ## Example: Add more skills
