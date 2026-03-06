@@ -35,22 +35,42 @@ Edit `values.yaml` to customize:
 
 ## AI Provider Authentication
 
-**This chart deploys OpenClaw without pre-configured AI providers.** After installation, users must complete OAuth onboarding:
+**This chart deploys OpenClaw without pre-configured AI providers.** After installation, authenticate with your AI provider:
 
-1. Install the chart:
-   ```bash
-   helm install openclaw oci://ghcr.io/thepagent/openclaw-helm --version 1.0.1
-   ```
+### Option 1: OpenAI OAuth (Recommended)
 
-2. Access the OpenClaw UI and complete OAuth onboarding for your preferred AI provider (OpenAI, Anthropic, etc.)
+```bash
+# Get pod name
+POD=$(kubectl get pod -l app.kubernetes.io/name=openclaw-helm -o jsonpath='{.items[0].metadata.name}')
 
-3. OpenClaw will securely store OAuth tokens and manage authentication
+# Run interactive OAuth login
+kubectl exec -it $POD -- openclaw models auth login --provider openai-codex
+```
 
-This approach ensures:
-- No API keys in configuration files
-- Secure OAuth-based authentication
-- Per-user provider authorization
-- Easy provider switching through the UI
+Follow the prompts to complete OAuth authentication. Your credentials are stored securely in the pod's persistent volume.
+
+### Option 2: API Key (Alternative)
+
+Create a Kubernetes secret with your API key:
+
+```bash
+kubectl create secret generic openclaw-api-key \
+  --from-literal=OPENAI_API_KEY=sk-...
+```
+
+Then add to your values.yaml:
+
+```yaml
+envFrom:
+  - secretRef:
+      name: openclaw-api-key
+```
+
+### Verify Authentication
+
+```bash
+kubectl exec $POD -- openclaw models status
+```
 
 ## Example: Add more skills
 
