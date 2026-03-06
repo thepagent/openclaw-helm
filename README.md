@@ -33,46 +33,51 @@ Edit `values.yaml` to customize:
 - `skills` - List of skills to install
 - `resources` - CPU/memory limits
 
-## AI Provider Authentication
+## Post-Installation Setup
 
-**This chart deploys OpenClaw without pre-configured AI providers.** After installation, add your API key:
+After installing the chart, run the OpenClaw onboarding wizard to configure your AI provider:
 
-### OpenAI (Recommended)
+```bash
+kubectl exec -it deployment/openclaw-openclaw-helm -c main -- node dist/index.js onboard
+```
 
-Create a Kubernetes secret with your OpenAI API key:
+This interactive wizard will guide you through:
+- Security acknowledgment
+- AI provider selection (OpenAI, Anthropic, etc.)
+- Authentication setup (OAuth or API keys)
+- Optional: Channel configuration (WhatsApp, Telegram, Slack, Discord, etc.)
+- Optional: Skills installation
+
+Your configuration will be stored in the pod's persistent volume.
+
+### Alternative: API Key via Secret
+
+If you prefer to skip the wizard and use API keys directly:
 
 ```bash
 kubectl create secret generic openclaw-api-key \
   --from-literal=OPENAI_API_KEY=sk-...
 ```
 
-Update your Helm values and upgrade:
+Update your values.yaml:
 
 ```yaml
-# values.yaml
 envFrom:
   - secretRef:
       name: openclaw-api-key
 ```
 
+Upgrade the release:
+
 ```bash
 helm upgrade openclaw oci://ghcr.io/thepagent/openclaw-helm --version 1.1.0 -f values.yaml
 ```
 
-### Verify Authentication
+### Verify Setup
 
 ```bash
 POD=$(kubectl get pod -l app.kubernetes.io/name=openclaw-helm -o jsonpath='{.items[0].metadata.name}')
 kubectl exec $POD -- openclaw models status
-```
-
-### Other Providers
-
-For Anthropic, Google, or other providers, use the same pattern:
-
-```bash
-kubectl create secret generic openclaw-api-key \
-  --from-literal=ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ## Example: Add more skills
