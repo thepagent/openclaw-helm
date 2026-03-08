@@ -18,6 +18,33 @@ After the local backup completes, the backup directory is synced to a remote des
 
 We do not provide ready-made scripts here. Share this guide with your AI agent and ask it to write scripts tailored to your environment and tooling (e.g. `aws s3 sync`, `rclone`, `rsync` over SSH).
 
+```text
+# ╔═════════════════════════════════════════════════════╗
+# ║              cron (daily)                           ║
+# ║     /path/to/openclaw-backup.sh                     ║
+# ╚════════════════════╤════════════════════════════════╝
+#                      │
+#                      ▼
+#          ╔═══════════════════════╗
+#          ║  kubectl cp           ║
+#          ║  pod:/home/node/      ║
+#          ║  .openclaw → host     ║
+#          ╚═══════════╤═══════════╝
+#                      │
+#                      ▼
+#          ╔═══════════════════════╗
+#          ║  prune old backups    ║
+#          ║  (retention window)   ║
+#          ╚═══════════╤═══════════╝
+#                      │
+#                      ▼
+#          ╔═══════════════════════╗
+#          ║  sync to remote       ║
+#          ║  (S3 / R2 / rsync /   ║
+#          ║   rclone / etc.)      ║
+#          ╚═══════════════════════╝
+```
+
 ## Restore
 
 To restore from a backup:
