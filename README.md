@@ -135,6 +135,14 @@ The `-E` flag preserves the `KUBECONFIG` environment variable when running with 
 helm uninstall openclaw
 ```
 
+## Further Reading
+
+To customize your own backup or auto-upgrade strategy, read:
+- [docs/backup.md](docs/backup.md) — backup concept, workflow, and restore steps
+- [docs/auto_upgrade.md](docs/auto_upgrade.md) — automated version checking and upgrade workflow
+
+Share these docs with your AI agent and ask it to implement the scripts for your environment.
+
 ## Example: Add more skills
 
 ```yaml
