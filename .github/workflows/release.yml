@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g., v1.3.2)'
+        required: true
+        type: string
 
 jobs:
   release:
@@ -13,11 +19,15 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Get version from tag
         id: version
         run: |
-          tag=${GITHUB_REF#refs/tags/v}
+          ref="${{ inputs.tag || github.ref }}"
+          tag=${ref#refs/tags/v}
+          tag=${tag#v}
           echo "version=$tag" >> "$GITHUB_OUTPUT"
 
       - name: Verify Chart.yaml version matches
@@ -49,12 +59,12 @@ jobs:
           app_version=$(grep '^appVersion:' Chart.yaml | awk '{print $2}' | tr -d '"')
           cat > release-notes.md << EOF
           ## Changes
-          
+
           - Chart version: ${{ steps.version.outputs.version }}
           - OpenClaw version: $app_version
-          
+
           ## Install
-          
+
           \`\`\`bash
           helm install openclaw oci://ghcr.io/${{ github.repository_owner }}/openclaw-helm --version ${{ steps.version.outputs.version }}
           \`\`\`
@@ -63,5 +73,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ inputs.tag || github.ref }}
           body_path: release-notes.md
           generate_release_notes: true
