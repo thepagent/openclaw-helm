@@ -24,7 +24,7 @@ We do not provide ready-made scripts here. Share this guide with your AI agent a
 
 ## Auto-Upgrade with Pre-Upgrade Backup
 
-A common pattern is to combine backup with automated Helm upgrades. The workflow below checks the OCI registry on a schedule, backs up before any upgrade, and sends a notification on success:
+A common pattern is to combine backup with automated Helm upgrades. An auto-upgrade checker runs on a cron schedule, compares the latest OCI registry version against the currently deployed version, and only proceeds when a new version is detected — backing up first, then upgrading, and sending a notification on success:
 
 ```text
 # Workflow:
