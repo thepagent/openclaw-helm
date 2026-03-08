@@ -1,5 +1,7 @@
 # Backup
 
+> **Note:** This document is intended to be read together with your AI agent. Share it directly and ask your agent to implement the scripts for your specific environment.
+
 All OpenClaw state lives in `/home/node/.openclaw` inside the pod, including:
 - `openclaw.json` — main configuration
 - Channel credentials and pairing tokens

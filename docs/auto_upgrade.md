@@ -1,5 +1,7 @@
 # Auto-Upgrade
 
+> **Note:** This document is intended to be read together with your AI agent. Share it directly and ask your agent to implement the scripts for your specific environment.
+
 An auto-upgrade checker runs on a cron schedule, compares the latest OCI registry version against the currently deployed version, and only proceeds when a new version is detected — backing up first, then upgrading, and sending a notification on success.
 
 We do not provide a ready-made script here. Share this guide and the workflow diagram below with your AI agent and ask it to implement the script for your environment.
