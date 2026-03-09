@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # openclaw-backup.sh — Layer 1 + Layer 2 backup using `openclaw backup create`
+# Requires OpenClaw >= 2026.3.8
 set -euo pipefail
 
 NAMESPACE="openclaw"

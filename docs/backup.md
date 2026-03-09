@@ -13,7 +13,7 @@ All OpenClaw state lives in `/home/node/.openclaw` inside the pod, including:
 The backup strategy has two layers:
 
 **Layer 1 — Local backup**
-A scheduled OS cron job runs on the host machine. It uses `openclaw backup create` inside the pod (available since 2026.3.8) to produce a verified archive with an embedded manifest, then copies it to the host via `kubectl cp`. Old backups beyond your retention window are pruned automatically.
+A scheduled OS cron job runs on the host machine. It uses `openclaw backup create` inside the pod — introduced in **OpenClaw 2026.3.8** — to produce a verified archive with an embedded manifest, then copies it to the host via `kubectl cp`. Old backups beyond your retention window are pruned automatically.
 
 **Layer 2 — Remote sync**
 After the local backup completes, the backup directory is synced to a remote destination (cloud storage, another host, etc.) for off-site durability.
