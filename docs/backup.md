@@ -20,37 +20,37 @@ After the local backup completes, the backup directory is synced to a remote des
 
 A ready-made script is provided at `scripts/openclaw-backup.sh`.
 
-```text
-# ╔═════════════════════════════════════════════════════╗
-# ║              cron (daily)                           ║
-# ║     scripts/openclaw-backup.sh                      ║
-# ╚════════════════════╤════════════════════════════════╝
-#                      │
-#                      ▼
-#          ╔═══════════════════════╗
-#          ║  openclaw backup      ║
-#          ║  create --verify      ║
-#          ║  (inside pod)         ║
-#          ╚═══════════╤═══════════╝
-#                      │
-#                      ▼
-#          ╔═══════════════════════╗
-#          ║  kubectl cp           ║
-#          ║  archive → host       ║
-#          ╚═══════════╤═══════════╝
-#                      │
-#                      ▼
-#          ╔═══════════════════════╗
-#          ║  prune old backups    ║
-#          ║  (retention window)   ║
-#          ╚═══════════╤═══════════╝
-#                      │
-#                      ▼
-#          ╔═══════════════════════╗
-#          ║  sync to remote       ║
-#          ║  (S3 / R2 / rsync /   ║
-#          ║   rclone / etc.)      ║
-#          ╚═══════════════════════╝
+```
+╔═════════════════════════════════════════════════════╗
+║              cron (daily)                           ║
+║     scripts/openclaw-backup.sh                      ║
+╚════════════════════╤════════════════════════════════╝
+                     │
+                     ▼
+         ╔═══════════════════════╗
+         ║  openclaw backup      ║
+         ║  create --verify      ║
+         ║  (inside pod)         ║
+         ╚═══════════╤═══════════╝
+                     │
+                     ▼
+         ╔═══════════════════════╗
+         ║  kubectl cp           ║
+         ║  archive → host       ║
+         ╚═══════════╤═══════════╝
+                     │
+                     ▼
+         ╔═══════════════════════╗
+         ║  prune old backups    ║
+         ║  (retention window)   ║
+         ╚═══════════╤═══════════╝
+                     │
+                     ▼
+         ╔═══════════════════════╗
+         ║  sync to remote       ║
+         ║  (S3 / R2 / rsync /   ║
+         ║   rclone / etc.)      ║
+         ╚═══════════════════════╝
 ```
 
 ## Quick Start (k3s)
