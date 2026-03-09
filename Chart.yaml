@@ -2,5 +2,5 @@ apiVersion: v2
 name: openclaw-helm
 description: OpenClaw AI Agent (custom chart without chromium)
 type: application
-version: 1.3.5
+version: 1.3.6
 appVersion: "2026.3.8"
