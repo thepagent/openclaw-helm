@@ -13,24 +13,30 @@ All OpenClaw state lives in `/home/node/.openclaw` inside the pod, including:
 The backup strategy has two layers:
 
 **Layer 1 — Local backup**
-A scheduled OS cron job runs on the host machine, pulls `/home/node/.openclaw` from the pod via `kubectl cp`, and stores it locally with a timestamp. Old backups beyond your retention window are pruned automatically.
+A scheduled OS cron job runs on the host machine. It uses `openclaw backup create` inside the pod (available since 2026.3.8) to produce a verified archive with an embedded manifest, then copies it to the host via `kubectl cp`. Old backups beyond your retention window are pruned automatically.
 
 **Layer 2 — Remote sync**
 After the local backup completes, the backup directory is synced to a remote destination (cloud storage, another host, etc.) for off-site durability.
 
-We do not provide ready-made scripts here. Share this guide with your AI agent and ask it to write scripts tailored to your environment and tooling (e.g. `aws s3 sync`, `rclone`, `rsync` over SSH).
+A ready-made script is provided at `scripts/openclaw-backup.sh`.
 
 ```text
 # ╔═════════════════════════════════════════════════════╗
 # ║              cron (daily)                           ║
-# ║     /path/to/openclaw-backup.sh                     ║
+# ║     scripts/openclaw-backup.sh                      ║
 # ╚════════════════════╤════════════════════════════════╝
 #                      │
 #                      ▼
 #          ╔═══════════════════════╗
+#          ║  openclaw backup      ║
+#          ║  create --verify      ║
+#          ║  (inside pod)         ║
+#          ╚═══════════╤═══════════╝
+#                      │
+#                      ▼
+#          ╔═══════════════════════╗
 #          ║  kubectl cp           ║
-#          ║  pod:/home/node/      ║
-#          ║  .openclaw → host     ║
+#          ║  archive → host       ║
 #          ╚═══════════╤═══════════╝
 #                      │
 #                      ▼
@@ -45,6 +51,19 @@ We do not provide ready-made scripts here. Share this guide with your AI agent a
 #          ║  (S3 / R2 / rsync /   ║
 #          ║   rclone / etc.)      ║
 #          ╚═══════════════════════╝
+```
+
+## Quick Start (k3s)
+
+```bash
+# Run once to verify
+bash scripts/openclaw-backup.sh
+
+# Schedule daily at 2am
+(crontab -l; echo "0 2 * * * bash $HOME/repo/openclaw-helm/scripts/openclaw-backup.sh >> $HOME/Backups/openclaw/backup.log 2>&1") | crontab -
+
+# Optional: enable S3 sync
+export REMOTE_DEST=s3://your-bucket/openclaw-backups
 ```
 
 ## Restore
