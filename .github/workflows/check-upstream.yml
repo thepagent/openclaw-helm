@@ -102,6 +102,12 @@ jobs:
           git commit -m "chore: bump OpenClaw to ${{ steps.get-version.outputs.version }}"
           git tag "v${{ steps.new-version.outputs.new_version }}"
           git push && git push --tags
+      - name: Trigger release workflow
+        if: steps.check.outputs.skip != 'true' && inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ secrets.THEPAGENT_PAT }}
+        run: |
+          gh workflow run release.yml --repo ${{ github.repository }} --ref "v${{ steps.new-version.outputs.new_version }}" -f tag="v${{ steps.new-version.outputs.new_version }}"
       - name: Set up Helm
         if: steps.check.outputs.skip != 'true' && inputs.dry_run != true
         uses: azure/setup-helm@v4
