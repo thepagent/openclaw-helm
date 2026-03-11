@@ -1,4 +1,4 @@
-OpenClaw has been installed!
+OpenClaw {{ .Chart.AppVersion }} has been installed!
 
 Gateway Secret: {{ include "openclaw-helm.fullname" . }}-gateway-token
   (retained on helm uninstall)
