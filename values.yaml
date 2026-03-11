@@ -47,6 +47,13 @@ config:
         identity:
           name: OpenClaw
           emoji: "🦞"
+      - id: emilie
+        identity:
+          name: "emilie 薺菜大餛飩"
+          emoji: "🥟"
+        channels:
+          telegram:
+            enabled: true
   
   session:
     scope: per-sender
@@ -73,6 +80,11 @@ skills:
   - weather
   - gog
 
+gateway:
+  token:
+    generate: true    # auto-generate gateway token Secret on install, retained on uninstall
+    secretName: ""    # override secret name if generate=false
+
 env: {}
   # EXAMPLE_VAR: "value"
 
@@ -83,4 +95,6 @@ env: {}
 #       name: openclaw-api-keys
 #   - configMapRef:
 #       name: openclaw-config
-envFrom: []
+envFrom:
+  - secretRef:
+      name: openclaw-emilie-telegram

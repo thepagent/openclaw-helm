@@ -1,0 +1,12 @@
+OpenClaw has been installed!
+
+Gateway Secret: {{ include "openclaw-helm.fullname" . }}-gateway-token
+  (retained on helm uninstall)
+
+To add keys to the secret:
+  kubectl create secret generic {{ include "openclaw-helm.fullname" . }}-gateway-token \
+    --from-literal=TELEGRAM_TOKEN=myvalue \
+    --dry-run=client -o yaml | kubectl apply -f -
+
+Then restart the pod:
+  kubectl rollout restart deployment/{{ include "openclaw-helm.fullname" . }}

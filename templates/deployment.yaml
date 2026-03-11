@@ -106,9 +106,16 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- end }}
-        {{- with .Values.envFrom }}
         envFrom:
-          {{- toYaml . | nindent 10 }}
+        {{- if .Values.gateway.token.generate }}
+        - secretRef:
+            name: {{ include "openclaw-helm.fullname" . }}-gateway-token
+        {{- else if .Values.gateway.token.secretName }}
+        - secretRef:
+            name: {{ .Values.gateway.token.secretName }}
+        {{- end }}
+        {{- with .Values.envFrom }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
         volumeMounts:
         - name: data
