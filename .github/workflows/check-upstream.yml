@@ -22,6 +22,11 @@ on:
         required: false
         type: boolean
         default: false
+      force:
+        description: 'Force release even if version unchanged (for re-releasing)'
+        required: false
+        type: boolean
+        default: false
 jobs:
   bump:
     runs-on: ubuntu-latest
@@ -53,7 +58,10 @@ jobs:
       - name: Check if update needed
         id: check
         run: |
-          if [ "${{ steps.get-version.outputs.version }}" != "${{ steps.current.outputs.app_version }}" ]; then
+          if [ "${{ inputs.force }}" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Force mode enabled"
+          elif [ "${{ steps.get-version.outputs.version }}" != "${{ steps.current.outputs.app_version }}" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             echo "OpenClaw version changed"
           else
@@ -91,7 +99,7 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         run: git diff
       - name: Commit, tag and push
-        if: steps.check.outputs.skip != 'true' && inputs.dry_run != true
+        if: steps.check.outputs.skip != 'true' && inputs.dry_run != true && inputs.force != true
         env:
           PAT: ${{ secrets.THEPAGENT_PAT }}
         run: |
