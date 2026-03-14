@@ -1,0 +1,21 @@
+[package]
+name = "gatekeeper"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+aws-config = { version = "1", features = ["behavior-version-latest"] }
+aws-sdk-secretsmanager = "1"
+reqwest = { version = "0.12", features = ["json"] }
+zeroize = { version = "1", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+anyhow = "1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
