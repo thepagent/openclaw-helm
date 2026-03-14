@@ -78,6 +78,15 @@ Neither option currently provides:
 
 For enterprise production use, these gaps should be addressed before adoption.
 
+## Wrapping Up
+
+- **Just want it running fast?** Use the Zeabur Template — one click, zero setup.
+- **On Zeabur with K3s?** Skip the Template and use `helm install` instead. You get the latest version, loopback security, and one-line upgrades with no extra infrastructure cost.
+- **Self-hosted / on-prem / enterprise PoC?** openclaw-helm is the only viable path — it works on any K8s cluster and integrates with enterprise secret managers.
+- **Enterprise production?** Both options need SSO, HA, and audit logging before they are production-ready. openclaw-helm's open architecture makes those gaps easier to fill.
+
+**Bottom line:** If you have access to any K8s environment (including Zeabur's built-in K3s), openclaw-helm is the better choice in every dimension except initial setup simplicity.
+
 ---
 
 *This document was assessed by [Kiro](https://kiro.dev) using Claude Opus 4.6 on March 14, 2026.*
