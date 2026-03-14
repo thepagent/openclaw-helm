@@ -77,3 +77,7 @@ Neither option currently provides:
 - Audit logging for compliance
 
 For enterprise production use, these gaps should be addressed before adoption.
+
+---
+
+*This document was assessed by [Kiro](https://kiro.dev) using Claude Opus 4.6 on March 14, 2026.*
