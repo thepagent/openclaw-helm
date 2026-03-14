@@ -1,6 +1,6 @@
 # Deploying OpenClaw on Zeabur: Template vs Helm Chart
 
-Zeabur offers two ways to run OpenClaw. This document compares them to help you choose.
+[Zeabur](https://zeabur.com/) has become one of the popular VPS providers, offering a curated collection of self-baked one-click templates as well as K3s-ready instances out of the box. This makes it a natural fit for running OpenClaw — and it offers two distinct ways to do so. This document compares them to help you choose.
 
 ## Options at a Glance
 
