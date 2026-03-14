@@ -1,5 +1,24 @@
 # Gatekeeper Sidecar Design
 
+## Problem
+
+OpenClaw is an AI agent gateway. The agent can execute arbitrary tools — bash commands, Python scripts, HTTP calls — as part of its reasoning loop. This creates a fundamental tension:
+
+> The agent needs secrets (API tokens, bot keys) to function, but giving the agent access to its own secrets means a compromised or misbehaving agent can exfiltrate them.
+
+Current risk with naive approaches:
+
+- Secrets in env vars → agent reads `process.env` or `/proc/self/environ`
+- Secrets in K8s Secret mounted as files → agent reads the file directly
+- Secrets in K8s Secret as env vars → same problem
+- No audit trail → you don't know when or why a secret was accessed
+
+The core problem: **the agent and its secrets live in the same trust boundary.**
+
+## Goal
+
+Move secrets out of the agent's trust boundary entirely, while still allowing the agent to function — with a human approval gate on every secret access.
+
 ## Overview
 
 Gatekeeper is a sidecar container that runs alongside the OpenClaw main container within the same Kubernetes pod. It acts as the sole holder of secrets, enforcing human-in-the-loop approval via Telegram before returning any secret to OpenClaw.
