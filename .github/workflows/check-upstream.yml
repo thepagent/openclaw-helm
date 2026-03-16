@@ -50,8 +50,8 @@ jobs:
       - name: Get current versions
         id: current
         run: |
-          chart_version=$(grep '^version:' Chart.yaml | awk '{print $2}')
-          app_version=$(grep '^appVersion:' Chart.yaml | awk '{print $2}' | tr -d '"')
+          chart_version=$(grep '^version:' charts/openclaw-helm/Chart.yaml | awk '{print $2}')
+          app_version=$(grep '^appVersion:' charts/openclaw-helm/Chart.yaml | awk '{print $2}' | tr -d '"')
           echo "chart_version=$chart_version" >> "$GITHUB_OUTPUT"
           echo "app_version=$app_version" >> "$GITHUB_OUTPUT"
           echo "Current chart: $chart_version, app: $app_version"
@@ -92,14 +92,14 @@ jobs:
       - name: Update Chart.yaml
         if: steps.check.outputs.skip != 'true'
         run: |
-          sed -i "s/^version: .*/version: ${{ steps.new-version.outputs.new_version }}/" Chart.yaml
-          sed -i "s/^appVersion: .*/appVersion: \"${{ steps.get-version.outputs.version }}\"/" Chart.yaml
+          sed -i "s/^version: .*/version: ${{ steps.new-version.outputs.new_version }}/" charts/openclaw-helm/Chart.yaml
+          sed -i "s/^appVersion: .*/appVersion: \"${{ steps.get-version.outputs.version }}\"/" charts/openclaw-helm/Chart.yaml
       - name: Update values.yaml
         if: steps.check.outputs.skip != 'true'
         run: |
           old_version="${{ steps.current.outputs.app_version }}"
           new_version="${{ steps.get-version.outputs.version }}"
-          sed -i "s/tag: \"${old_version}\"/tag: \"${new_version}\"/" values.yaml
+          sed -i "s/tag: \"${old_version}\"/tag: \"${new_version}\"/" charts/openclaw-helm/values.yaml
       - name: Show changes
         if: steps.check.outputs.skip != 'true'
         run: git diff
@@ -111,7 +111,7 @@ jobs:
           git config user.name "thepagent"
           git config user.email "thepagent@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
-          git add Chart.yaml values.yaml
+          git add charts/openclaw-helm/Chart.yaml charts/openclaw-helm/values.yaml
           git commit -m "chore: bump OpenClaw to ${{ steps.get-version.outputs.version }}"
           git tag "v${{ steps.new-version.outputs.new_version }}"
           git push && git push --tags
@@ -128,7 +128,7 @@ jobs:
       - name: Package and push chart
         if: steps.check.outputs.skip != 'true' && inputs.dry_run != true
         run: |
-          helm package .
+          helm package charts/openclaw-helm
           helm push openclaw-helm-${{ steps.new-version.outputs.new_version }}.tgz oci://ghcr.io/${{ github.repository_owner }}
       # GitHub Release is now handled by chart-releaser in release.yml
       - name: Dry run summary

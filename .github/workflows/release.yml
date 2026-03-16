@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - "Chart.yaml"
+      - "charts/openclaw-helm/Chart.yaml"
 
 jobs:
   release:
@@ -28,43 +28,12 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4
 
-      - name: Install chart-releaser
-        run: |
-          CR_VERSION="1.6.1"
-          curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v${CR_VERSION}/chart-releaser_${CR_VERSION}_linux_amd64.tar.gz"
-          tar -xzf cr.tar.gz cr
-          sudo mv cr /usr/local/bin/cr
-
-      - name: Get chart info
-        id: chart
-        run: |
-          echo "version=$(grep '^version:' Chart.yaml | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-          echo "name=$(grep '^name:' Chart.yaml | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-
-      - name: Package chart
-        run: |
-          mkdir -p .cr-release-packages
-          helm package . --destination .cr-release-packages
-
-      - name: Upload chart to GitHub release
-        run: |
-          cr upload \
-            --owner "${{ github.repository_owner }}" \
-            --git-repo "${{ github.event.repository.name }}" \
-            --package-path .cr-release-packages \
-            --token "${{ secrets.GITHUB_TOKEN }}" \
-            --skip-existing
-
-      - name: Update Helm repo index on gh-pages
-        run: |
-          cr index \
-            --owner "${{ github.repository_owner }}" \
-            --git-repo "${{ github.event.repository.name }}" \
-            --package-path .cr-release-packages \
-            --index-path ./index.yaml \
-            --charts-repo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" \
-            --token "${{ secrets.GITHUB_TOKEN }}" \
-            --push
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          skip_existing: true
+        env:
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Append OCI install instructions to release notes
         env:
@@ -72,8 +41,9 @@ jobs:
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
-          VERSION="${{ steps.chart.outputs.version }}"
-          TAG="${{ steps.chart.outputs.name }}-${VERSION}"
+          VERSION=$(grep '^version:' charts/openclaw-helm/Chart.yaml | awk '{print $2}')
+          NAME=$(grep '^name:' charts/openclaw-helm/Chart.yaml | awk '{print $2}')
+          TAG="${NAME}-${VERSION}"
 
           # Skip if release was not created (skip_existing)
           if ! gh release view "${TAG}" --repo "${OWNER}/${REPO}" > /dev/null 2>&1; then
