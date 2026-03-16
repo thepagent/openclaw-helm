@@ -130,23 +130,7 @@ jobs:
         run: |
           helm package .
           helm push openclaw-helm-${{ steps.new-version.outputs.new_version }}.tgz oci://ghcr.io/${{ github.repository_owner }}
-      - name: Create GitHub Release
-        if: steps.check.outputs.skip != 'true' && inputs.dry_run != true
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ steps.new-version.outputs.new_version }}
-          generate_release_notes: true
-          body: |
-            ## Changes
-
-            - Chart version: ${{ steps.new-version.outputs.new_version }}
-            - OpenClaw version: ${{ steps.get-version.outputs.version }}
-
-            ## Install
-
-            ```bash
-            helm install openclaw oci://ghcr.io/${{ github.repository_owner }}/openclaw-helm --version ${{ steps.new-version.outputs.new_version }}
-            ```
+      # GitHub Release is now handled by chart-releaser in release.yml
       - name: Dry run summary
         if: steps.check.outputs.skip != 'true' && inputs.dry_run == true
         run: |

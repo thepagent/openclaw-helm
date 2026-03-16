@@ -4,8 +4,50 @@ A slim Helm chart for OpenClaw designed without Chromium browser integration. Th
 
 ## Install
 
+There are two ways to install this chart.
+
+### OCI Registry（recommended）
+
+Pull directly from GitHub Container Registry without any repo setup:
+
 ```bash
-helm install openclaw oci://ghcr.io/thepagent/openclaw-helm -n openclaw --create-namespace
+helm install openclaw oci://ghcr.io/thepagent/openclaw-helm \
+  -n openclaw --create-namespace
+```
+
+Install a specific version:
+
+```bash
+helm install openclaw oci://ghcr.io/thepagent/openclaw-helm \
+  --version 1.3.9 \
+  -n openclaw --create-namespace
+```
+
+Upgrade to a newer version:
+
+```bash
+helm upgrade openclaw oci://ghcr.io/thepagent/openclaw-helm -n openclaw
+```
+
+### Helm Repository（GitHub Pages）
+
+Add the Helm repository and install from there:
+
+```bash
+helm repo add openclaw https://thepagent.github.io/openclaw-helm
+helm repo update
+
+# Install latest
+helm install openclaw openclaw/openclaw-helm -n openclaw --create-namespace
+
+# Install a specific version
+helm install openclaw openclaw/openclaw-helm --version 1.3.9 -n openclaw --create-namespace
+```
+
+Browse available versions:
+
+```bash
+helm search repo openclaw --versions
 ```
 
 The `--create-namespace` flag will create the `openclaw` namespace if it doesn't exist.

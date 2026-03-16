@@ -1,0 +1,108 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Chart.yaml"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Get chart version
+        id: chart
+        run: |
+          version=$(grep '^version:' Chart.yaml | awk '{print $2}')
+          name=$(grep '^name:' Chart.yaml | awk '{print $2}')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - name: Package chart
+        run: |
+          mkdir -p .cr-release-packages
+          helm package . --destination .cr-release-packages
+
+      - name: Install chart-releaser
+        run: |
+          CR_VERSION="1.6.1"
+          curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v${CR_VERSION}/chart-releaser_${CR_VERSION}_linux_amd64.tar.gz"
+          tar -xzf cr.tar.gz cr
+          sudo mv cr /usr/local/bin/cr
+
+      - name: Upload chart to GitHub release
+        run: |
+          cr upload \
+            --owner "${{ github.repository_owner }}" \
+            --git-repo "${GITHUB_REPOSITORY##*/}" \
+            --package-path .cr-release-packages \
+            --token "${{ secrets.GITHUB_TOKEN }}" \
+            --skip-existing
+
+      - name: Append OCI install instructions to release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${GITHUB_REPOSITORY##*/}"
+          VERSION="${{ steps.chart.outputs.version }}"
+          TAG="${{ steps.chart.outputs.name }}-${VERSION}"
+
+          NOTES=$(cat <<EOF
+          ## 安裝方式
+
+          ### Helm Repository（GitHub Pages）
+          \`\`\`bash
+          helm repo add openclaw https://${OWNER}.github.io/${REPO}
+          helm repo update
+          helm install openclaw openclaw/${REPO} --version ${VERSION}
+          \`\`\`
+
+          ### OCI Registry
+          \`\`\`bash
+          helm pull oci://ghcr.io/${OWNER}/${REPO} --version ${VERSION}
+          helm install openclaw oci://ghcr.io/${OWNER}/${REPO} --version ${VERSION}
+          \`\`\`
+          EOF
+          )
+
+          # 取得現有 release notes，附加 OCI 安裝說明
+          EXISTING=$(gh release view "${TAG}" --repo "${OWNER}/${REPO}" --json body --jq '.body' 2>/dev/null || echo "")
+          if [ -n "$EXISTING" ]; then
+            NEW_BODY="${EXISTING}
+
+          ${NOTES}"
+          else
+            NEW_BODY="${NOTES}"
+          fi
+
+          gh release edit "${TAG}" \
+            --repo "${OWNER}/${REPO}" \
+            --notes "${NEW_BODY}"
+
+      - name: Update Helm repo index on gh-pages
+        run: |
+          cr index \
+            --owner "${{ github.repository_owner }}" \
+            --git-repo "${GITHUB_REPOSITORY##*/}" \
+            --package-path .cr-release-packages \
+            --index-path ./index.yaml \
+            --token "${{ secrets.GITHUB_TOKEN }}" \
+            --push
