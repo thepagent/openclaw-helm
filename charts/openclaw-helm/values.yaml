@@ -34,7 +34,8 @@ config:
   
   browser:
     enabled: false
-  
+    # Set to true to install Chrome/Chromium system libraries via init container
+
   agents:
     defaults:
       workspace: /home/node/.openclaw/workspace
@@ -77,6 +78,9 @@ gateway:
   token:
     generate: true    # auto-generate gateway token Secret on install, retained on uninstall
     secretName: ""    # override secret name if generate=false
+
+browser:
+  depsImage: debian:12
 
 env: {}
   # EXAMPLE_VAR: "value"
