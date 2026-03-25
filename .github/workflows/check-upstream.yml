@@ -33,6 +33,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Generate App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
       - name: Get latest OpenClaw version
         id: get-version
@@ -105,18 +111,18 @@ jobs:
       - name: Commit, tag and push
         if: steps.check.outputs.skip != 'true' && inputs.dry_run != true && inputs.force != true
         env:
-          PAT: ${{ secrets.THEPAGENT_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           git config user.name "thepagent"
           git config user.email "thepagent@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
           git add charts/openclaw-helm/Chart.yaml charts/openclaw-helm/values.yaml
           git commit -m "chore: bump OpenClaw to ${{ steps.get-version.outputs.version }}"
           git push
       - name: Trigger release workflow
         if: steps.check.outputs.skip != 'true' && inputs.dry_run != true && inputs.force != true
         env:
-          GH_TOKEN: ${{ secrets.THEPAGENT_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh workflow run release.yml --repo ${{ github.repository }}
       # Packaging, OCI push, GitHub Release, and gh-pages index are all handled by release.yml
