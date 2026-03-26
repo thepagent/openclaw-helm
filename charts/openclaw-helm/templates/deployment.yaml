@@ -11,6 +11,8 @@ spec:
       {{- include "openclaw-helm.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "openclaw-helm.selectorLabels" . | nindent 8 }}
     spec:
@@ -126,6 +128,18 @@ spec:
           mountPath: /home/node/.bash_aliases
           subPath: bash_aliases
       
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
       - name: config
         configMap:

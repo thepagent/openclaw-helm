@@ -89,3 +89,9 @@ env: {}
 #   - configMapRef:
 #       name: openclaw-config
 envFrom: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
