@@ -54,25 +54,13 @@ npm install -g --prefix ~/.openclaw/workspace <package>
 
 ## Authorizing CLIs (Login / OAuth)
 
-The Pod has no browser, so any CLI that requires login must use **device flow** — never interactive browser-based OAuth.
+The Pod has no browser, so any CLI that requires login must use **device flow**.
 
-When a CLI needs authorization, ask OpenClaw to run it with the device flow flag and **send you the URL + code via Telegram or Discord** so you can authorize from your phone.
+Simply tell OpenClaw:
 
-Examples:
+> "Log in to `<CLI name>` using device flow and send me the link with the code."
 
-```bash
-# GitHub CLI — device flow
-gh auth login --git-protocol https --web  # prints a code + URL; paste code at the URL
-
-# Cloudflare Wrangler — device flow
-wrangler login  # prints a URL; open it and authorize
-```
-
-### Example prompt to OpenClaw
-
-> Log in to GitHub CLI using device flow and send me the authorization URL and code on Telegram.
-
-OpenClaw will run the command, capture the one-time code and URL, and message you directly so you can authorize without touching the server.
+OpenClaw will run the command, capture the one-time code and URL, and send them to you via Telegram or Discord so you can authorize from your phone.
 
 ## Summary
 
