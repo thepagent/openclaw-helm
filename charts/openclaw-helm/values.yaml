@@ -8,10 +8,17 @@ replicas: 1
 resources:
   limits:
     cpu: 2
-    memory: 2Gi
+    memory: 3Gi
   requests:
     cpu: 200m
     memory: 512Mi
+
+# nodeOptions configures Node.js runtime options for the gateway container.
+# maxOldSpaceSize sets --max-old-space-size (in MiB) via NODE_OPTIONS,
+# causing Node.js to exit gracefully before the kernel OOM killer fires.
+# Set to 0 to disable.
+nodeOptions:
+  maxOldSpaceSize: 2560
 
 service:
   type: ClusterIP

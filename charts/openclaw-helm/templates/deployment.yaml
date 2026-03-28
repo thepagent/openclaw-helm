@@ -125,8 +125,12 @@ spec:
           failureThreshold: 30
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
-        {{- if .Values.env }}
+        {{- if or .Values.env (and .Values.nodeOptions .Values.nodeOptions.maxOldSpaceSize) }}
         env:
+        {{- if and .Values.nodeOptions .Values.nodeOptions.maxOldSpaceSize }}
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size={{ .Values.nodeOptions.maxOldSpaceSize }}"
+        {{- end }}
         {{- range $key, $value := .Values.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
