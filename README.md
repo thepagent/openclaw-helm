@@ -230,6 +230,32 @@ To customize your own backup or auto-upgrade strategy, read:
 
 Share these docs with your AI agent and ask it to implement the scripts for your environment.
 
+## Resource Limits
+
+The default memory limit is `3Gi` with `--max-old-space-size=2560` set via `NODE_OPTIONS`. Both are required together:
+
+```
+  3Gi ──────────────────────────────  ← container limit (kernel)
+        ~512Mi OS / V8 non-heap
+2560Mi ╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌  ← Node.js heap cap
+        ▓▓▓▓▓ Node.js heap ▓▓▓▓▓▓▓▓  ← capped, cannot exceed
+             hits 2560Mi → Node exits
+             exit 1 ✅ (logged)
+```
+
+Without `--max-old-space-size`, Node.js grows unchecked until the kernel OOM killer fires silently with exit 137. With the heap cap, Node.js exits gracefully with a clear error in logs.
+
+To customize for your environment:
+
+```yaml
+resources:
+  limits:
+    memory: 4Gi
+
+nodeOptions:
+  maxOldSpaceSize: 3584  # ~512Mi headroom below the memory limit; set to 0 to disable
+```
+
 ## Pod Scheduling
 
 Use standard Kubernetes scheduling fields to control where the OpenClaw pod runs:
