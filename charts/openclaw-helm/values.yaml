@@ -1,9 +1,16 @@
 image:
   repository: ghcr.io/openclaw/openclaw
   tag: "2026.3.28"
+  digest: ""    # if set, overrides tag (e.g. sha256:abc123...)
   pullPolicy: IfNotPresent
 
 replicas: 1
+
+# strategy controls the deployment update strategy
+# Use Recreate for RWO PVC (e.g. EBS) to avoid Multi-Attach errors
+strategy: {}
+# strategy:
+#   type: Recreate
 
 resources:
   limits:
@@ -106,3 +113,17 @@ tolerations: []
 
 # affinity defines advanced node/pod scheduling rules
 affinity: {}
+
+# podSecurityContext sets pod-level security attributes (e.g. fsGroup for volume permissions)
+podSecurityContext: {}
+# podSecurityContext:
+#   fsGroup: 1000
+
+# extraContainers adds sidecar containers to the pod
+extraContainers: []
+
+# extraVolumeMounts adds additional volume mounts to the main container
+extraVolumeMounts: []
+
+# extraVolumes adds additional volumes to the pod
+extraVolumes: []
