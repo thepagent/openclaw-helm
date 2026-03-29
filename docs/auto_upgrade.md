@@ -4,7 +4,7 @@
 
 An auto-upgrade checker runs on a cron schedule, compares the latest OCI registry version against the currently deployed version, and only proceeds when a new version is detected — backing up first, then upgrading, and sending a notification on success.
 
-We do not provide a ready-made script here. Share this guide and the workflow diagram below with your AI agent and ask it to implement the script for your environment.
+A sample script is provided at [`scripts/openclaw-autoupgrade.sh`](../scripts/openclaw-autoupgrade.sh). Copy it, set your `--target <YOUR_TELEGRAM_CHAT_ID>`, and schedule it with cron.
 
 ## Workflow
 
