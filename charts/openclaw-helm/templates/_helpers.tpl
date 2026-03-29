@@ -50,10 +50,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{/*
 Container image reference. Uses digest when set, otherwise tag.
+Digest without algorithm prefix (e.g. bare hex) gets sha256: auto-prepended.
 */}}
 {{- define "openclaw-helm.image" -}}
 {{- if .Values.image.digest -}}
-{{ .Values.image.repository }}@{{ .Values.image.digest }}
+{{- $d := .Values.image.digest | trim -}}
+{{- if not (contains ":" $d) -}}
+{{- $d = printf "sha256:%s" $d -}}
+{{- end -}}
+{{ .Values.image.repository }}@{{ $d }}
 {{- else -}}
 {{ .Values.image.repository }}:{{ .Values.image.tag }}
 {{- end -}}
