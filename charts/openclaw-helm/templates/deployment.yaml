@@ -9,6 +9,12 @@ spec:
   {{- with .Values.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
+  {{- else }}
+  {{- /* strategy: {} or null falls through with-guard;
+         default to Recreate because RWO PVCs cause
+         Multi-Attach errors during RollingUpdate upgrades */ -}}
+  strategy:
+    type: Recreate
   {{- end }}
   selector:
     matchLabels:

@@ -53,8 +53,8 @@ Container image reference. Uses digest when set, otherwise tag.
 Digest without algorithm prefix (e.g. bare hex) gets sha256: auto-prepended.
 */}}
 {{- define "openclaw-helm.image" -}}
-{{- if .Values.image.digest -}}
-{{- $d := .Values.image.digest | trim -}}
+{{- $d := (.Values.image.digest | default "" | trim) -}}
+{{- if $d -}}
 {{- if not (contains ":" $d) -}}
 {{- $d = printf "sha256:%s" $d -}}
 {{- end -}}
