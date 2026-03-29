@@ -101,6 +101,69 @@ OpenClaw will run the command, capture the one-time code and URL, and send them 
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### GitHub CLI example (`gh auth login`)
+
+A concrete example for GitHub CLI when you can only interact with the OpenClaw agent inside the Pod:
+
+Ask OpenClaw:
+
+> can you run like this and tell me the OTP?  
+> `gh auth login --hostname github.com -p https --git-protocol https`
+
+OpenClaw will run the command inside the Pod and reply with something like:
+
+- device URL: `https://github.com/login/device`
+- one-time code: `3E31-B255`
+
+Then:
+
+1. Open `https://github.com/login/device` on your phone or laptop
+2. Enter the one-time code provided by the agent
+3. Authorize the login in GitHub
+4. The `gh` CLI inside the Pod will persist its authentication state
+
+### Example interaction
+
+**You → OpenClaw**
+
+```text
+can you run like this and tell me the OTP?
+gh auth login --hostname github.com -p https --git-protocol https
+```
+
+**OpenClaw → You**
+
+```text
+First copy your one-time code: 3E31-B255
+Open this URL to continue in your web browser: https://github.com/login/device
+```
+
+**You**
+
+- Open the URL
+- Enter the code
+- Authorize GitHub CLI
+
+**Result**
+
+- `gh` inside the Pod is now authenticated
+- auth persists across Pod restarts if the GitHub CLI config/token is stored under the persisted `~/.openclaw` path
+
+### Notes
+
+- Prefer installing `gh` under `~/.openclaw/workspace/bin/gh`
+- Ensure commands run with:
+
+```bash
+export PATH=~/.openclaw/workspace/bin:$PATH
+```
+
+- Verify login with:
+
+```bash
+gh auth status
+```
+
 ## Summary
 
 | ✅ Persisted | ❌ Not Persisted |
