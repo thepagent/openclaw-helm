@@ -7,10 +7,11 @@ image:
 replicas: 1
 
 # strategy controls the deployment update strategy
-# Use Recreate for RWO PVC (e.g. EBS) to avoid Multi-Attach errors
-strategy: {}
-# strategy:
-#   type: Recreate
+# Recreate is required for RWO PVC (default on most cloud providers) to avoid
+# Multi-Attach errors during helm upgrade. Override to RollingUpdate only if
+# your StorageClass supports RWX (ReadWriteMany).
+strategy:
+  type: Recreate
 
 resources:
   limits:
