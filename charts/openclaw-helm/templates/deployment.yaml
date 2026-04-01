@@ -81,9 +81,7 @@ spec:
           cd /home/node/.openclaw/workspace
           {{- range .Values.skills }}
           if [ ! -d "skills/{{ . }}" ]; then
-            # Design Decision: || true kept intentionally so one failed skill does not block pod startup;
-            # error logging improvement deferred to a follow-up PR
-            npx -y clawhub install "{{ . }}" --no-input || true
+            npx -y clawhub install "{{ . }}" --no-input || echo "[WARN] Failed to install skill: {{ . }}"
           fi
           {{- end }}
         env:
