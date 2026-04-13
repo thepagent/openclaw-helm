@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/openclaw/openclaw
-  tag: "2026.4.11"
+  tag: "2026.4.12"
   digest: ""    # if set, overrides tag (e.g. sha256:abc123...)
   pullPolicy: IfNotPresent
 
