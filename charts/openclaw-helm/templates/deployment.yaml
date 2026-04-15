@@ -39,14 +39,18 @@ spec:
         - |
           mkdir -p /home/node/.openclaw
           [ -f /home/node/.openclaw/openclaw.json ] || cp /config/openclaw.json /home/node/.openclaw/openclaw.json
-          # Sync gateway.remote.token to match OPENCLAW_GATEWAY_TOKEN (if set)
-          # gateway reads auth token from env var first (env-first precedence), so auth.token in config is not needed
+          # Sync gateway tokens to match OPENCLAW_GATEWAY_TOKEN (if set)
+          # Sync both auth.token and remote.token so all internal sub-processes
+          # (Telegram Exec Approvals, cron agents, etc.) use the correct token
+          # regardless of which field they read from config.
           if [ -n "$OPENCLAW_GATEWAY_TOKEN" ]; then
             node -e "
               const fs = require('fs');
               const p = '/home/node/.openclaw/openclaw.json';
               const c = JSON.parse(fs.readFileSync(p));
               c.gateway = c.gateway || {};
+              c.gateway.auth = c.gateway.auth || {};
+              c.gateway.auth.token = process.env.OPENCLAW_GATEWAY_TOKEN;
               c.gateway.remote = c.gateway.remote || {};
               c.gateway.remote.token = process.env.OPENCLAW_GATEWAY_TOKEN;
               fs.writeFileSync(p, JSON.stringify(c, null, 2));
@@ -61,7 +65,7 @@ spec:
               {{- else }}
               name: {{ .Values.gateway.token.secretName }}
               {{- end }}
-              key: token
+              key: OPENCLAW_GATEWAY_TOKEN
               optional: true
         volumeMounts:
         - name: config
@@ -94,7 +98,11 @@ spec:
           mountPath: /home/node/.openclaw
         - name: tmp
           mountPath: /tmp
-      
+
+      {{- with .Values.extraInitContainers }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+
       containers:
       - name: main
         image: "{{ include "openclaw-helm.image" . }}"
