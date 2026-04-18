@@ -98,7 +98,11 @@ spec:
           mountPath: /home/node/.openclaw
         - name: tmp
           mountPath: /tmp
-      
+
+      {{- with .Values.extraInitContainers }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+
       containers:
       - name: main
         image: "{{ include "openclaw-helm.image" . }}"
