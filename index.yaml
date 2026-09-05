@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   openclaw-helm:
   - apiVersion: v2
+    appVersion: 2026.9.2
+    created: "2026-09-05T21:00:50.026356905Z"
+    description: OpenClaw AI Agent (custom chart without chromium)
+    digest: 1a4b33811caed8eb891e813e4ec3b2ed437e9853a777669787cc007e1ab5f6bc
+    name: openclaw-helm
+    type: application
+    urls:
+    - https://github.com/thepagent/openclaw-helm/releases/download/openclaw-helm-1.5.51/openclaw-helm-1.5.51.tgz
+    version: 1.5.51
+  - apiVersion: v2
     appVersion: 2026.9.1
     created: "2026-09-04T17:28:34.880899548Z"
     description: OpenClaw AI Agent (custom chart without chromium)
@@ -571,4 +581,4 @@ entries:
     urls:
     - https://github.com/thepagent/openclaw-helm/releases/download/openclaw-helm-1.3.11/openclaw-helm-1.3.11.tgz
     version: 1.3.11
-generated: "2026-09-04T17:28:34.881078956Z"
+generated: "2026-09-05T21:00:50.026643358Z"
